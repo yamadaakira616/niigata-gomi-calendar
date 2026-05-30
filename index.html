@@ -2,306 +2,543 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="ごみの日">
+<meta name="theme-color" content="#F2F2F7">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
 <title>新潟市 ごみカレンダー</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI',sans-serif;background:#f0f2f5;color:#1a1a1a;min-height:100vh}
-
-/* ヘッダー */
-.hdr{background:linear-gradient(135deg,#1a237e 0%,#283593 100%);color:#fff;padding:18px 20px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,.25)}
-.hdr-icon{font-size:28px;line-height:1}
-.hdr h1{font-size:17px;font-weight:700;letter-spacing:.04em}
-.hdr p{font-size:11px;opacity:.75;margin-top:2px}
-
-/* コンテナ */
-.wrap{max-width:560px;margin:0 auto;padding:16px}
-
-/* カード */
-.card{background:#fff;border-radius:14px;padding:18px;margin-bottom:14px;box-shadow:0 1px 6px rgba(0,0,0,.08)}
-.card-label{font-size:12px;font-weight:700;color:#888;letter-spacing:.08em;margin-bottom:10px;text-transform:uppercase}
-
-/* 区選択 */
-.ward-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-.ward-btn{padding:9px 4px;font-size:12px;font-weight:600;border:1.5px solid #dde;border-radius:8px;background:#fff;cursor:pointer;text-align:center;color:#444;transition:all .15s}
-.ward-btn:hover{background:#e8eaf6;border-color:#7986cb}
-.ward-btn.active{background:#1a237e;border-color:#1a237e;color:#fff}
-
-/* 地区検索 */
-.search-box{position:relative;margin-bottom:8px}
-.search-box input{width:100%;padding:11px 14px 11px 36px;border:1.5px solid #dde;border-radius:9px;font-size:14px;outline:none;transition:border-color .2s}
-.search-box input:focus{border-color:#7986cb}
-.search-box::before{content:"🔍";position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none}
-.area-list{max-height:240px;overflow-y:auto;border:1.5px solid #dde;border-radius:9px}
-.area-item{padding:11px 14px;font-size:13px;cursor:pointer;border-bottom:1px solid #f2f2f2;display:flex;justify-content:space-between;align-items:center;transition:background .1s}
-.area-item:last-child{border-bottom:none}
-.area-item:hover{background:#f0f2ff}
-.area-item.active{background:#e8eaf6}
-.area-code{font-size:10px;color:#aaa;flex-shrink:0;margin-left:8px}
-.selected-tag{margin-top:10px;padding:8px 12px;background:#e8eaf6;border-radius:8px;font-size:12px;color:#1a237e;font-weight:600;display:none}
-.selected-tag::before{content:"✓ "}
-
-/* 今日カード */
-.today-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
-.today-date{font-size:22px;font-weight:800;color:#1a237e;line-height:1.1}
-.today-sub{font-size:11px;color:#999;margin-top:3px}
-.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px}
-.chip{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:20px;font-size:13px;font-weight:700;color:#fff;letter-spacing:.02em}
-.no-col{font-size:14px;color:#bbb;padding:4px 0}
-
-/* カレンダー */
-.cal-nav-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.cal-nav-row h2{font-size:17px;font-weight:700}
-.nav-btn{padding:6px 14px;border:1.5px solid #dde;border-radius:7px;background:#fff;cursor:pointer;font-size:14px;font-weight:600;color:#444;transition:background .15s}
-.nav-btn:hover{background:#f0f2ff}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
-.cal-dow{text-align:center;font-size:10px;font-weight:700;padding:3px 0;color:#aaa}
-.cal-dow:first-child{color:#e53935}
-.cal-dow:last-child{color:#1565c0}
-.cal-day{min-height:58px;padding:3px 2px;border-radius:5px;background:#fafafa}
-.cal-day.today{background:#e8eaf6;outline:2px solid #7986cb}
-.cal-day.other{opacity:.2}
-.day-n{font-size:11px;font-weight:700;margin-bottom:2px;padding-left:1px}
-.cal-sun .day-n{color:#e53935}
-.cal-sat .day-n{color:#1565c0}
-.tags{display:flex;flex-direction:column;gap:2px}
-.tag{font-size:8.5px;padding:1px 3px;border-radius:3px;color:#fff;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-
-/* 凡例 */
-.legend{margin-top:14px;display:flex;flex-wrap:wrap;gap:7px}
-.leg{display:flex;align-items:center;gap:4px;font-size:11px;color:#555}
-.leg-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
-
-.hidden{display:none}
+:root{
+  --pri:#007AFF;--bg:#F2F2F7;--bg2:#FFFFFF;
+  --lbl:#000000;--lbl2:#3C3C43;--lbl3:#6C6C70;
+  --sep:rgba(60,60,67,.18);--tabh:49px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans',sans-serif;
+  background:var(--bg);color:var(--lbl)}
+#app{height:100%;display:flex;flex-direction:column}
+.screen{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  display:none;
+  padding-bottom:calc(var(--tabh) + env(safe-area-inset-bottom,0px) + 8px)}
+.screen.active{display:block}
+.sHdr{
+  position:sticky;top:0;z-index:10;
+  padding:calc(env(safe-area-inset-top,0px) + 12px) 16px 12px;
+  background:rgba(242,242,247,.92);
+  backdrop-filter:blur(16px) saturate(180%);
+  -webkit-backdrop-filter:blur(16px) saturate(180%);
+  border-bottom:.5px solid var(--sep)}
+.sHdr h1{font-size:17px;font-weight:600;letter-spacing:-.02em}
+.sHdr small{font-size:12px;color:var(--lbl3);display:block;margin-top:1px}
+.secLabel{padding:8px 16px 4px;font-size:12px;color:var(--lbl3);
+  text-transform:uppercase;letter-spacing:.04em;margin-top:16px}
+.secBody{background:var(--bg2);
+  border-top:.5px solid var(--sep);border-bottom:.5px solid var(--sep)}
+.row{display:flex;align-items:center;padding:12px 16px;min-height:44px;
+  border-bottom:.5px solid var(--sep)}
+.row:last-child{border-bottom:none}
+.rowLbl{flex:1;font-size:17px}
+.rowSub{font-size:13px;color:var(--lbl3);line-height:1.5}
+.hero{background:var(--bg2);padding:20px 16px 16px;
+  border-bottom:.5px solid var(--sep)}
+.heroDate{font-size:26px;font-weight:700;letter-spacing:-.02em}
+.heroArea{font-size:13px;color:var(--lbl3);margin-top:3px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{display:inline-flex;align-items:center;gap:6px;
+  padding:9px 18px;border-radius:24px;font-size:15px;font-weight:600;color:#fff}
+.noCol{font-size:15px;color:var(--lbl3);margin-top:12px}
+.nextRow{display:flex;align-items:flex-start;padding:12px 16px;
+  border-bottom:.5px solid var(--sep)}
+.nextRow:last-child{border-bottom:none}
+.nextDate{font-size:15px;font-weight:500;min-width:110px;flex-shrink:0}
+.nextTypes{font-size:13px;color:var(--lbl2);flex:1}
+.empty{text-align:center;padding:64px 24px 24px;color:var(--lbl3)}
+.empty h2{font-size:20px;font-weight:600;color:var(--lbl);margin-bottom:8px}
+.empty p{font-size:15px;line-height:1.6}
+.emptyBtn{margin-top:20px;padding:14px 32px;background:var(--pri);
+  color:#fff;border:none;border-radius:12px;font-size:17px;font-weight:600;cursor:pointer}
+.calNavBar{
+  position:sticky;top:0;z-index:10;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:calc(env(safe-area-inset-top,0px) + 10px) 16px 10px;
+  background:rgba(242,242,247,.92);
+  backdrop-filter:blur(16px) saturate(180%);
+  -webkit-backdrop-filter:blur(16px) saturate(180%);
+  border-bottom:.5px solid var(--sep)}
+.calNavBar h2{font-size:17px;font-weight:600}
+.calNavBtn{width:36px;height:36px;border:none;border-radius:50%;
+  background:rgba(0,122,255,.12);color:var(--pri);
+  font-size:20px;font-weight:300;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;line-height:1;padding:0}
+.calWrap{padding:0 8px 12px;background:var(--bg2)}
+.calDows{display:grid;grid-template-columns:repeat(7,1fr);padding:6px 0 2px}
+.calDow{text-align:center;font-size:12px;font-weight:500;color:var(--lbl3);padding:4px 0}
+.calDow:first-child{color:#FF3B30}
+.calDow:last-child{color:#007AFF}
+.calCells{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.calCell{min-height:54px;display:flex;flex-direction:column;align-items:center;
+  padding:4px 2px 3px;border-radius:8px}
+.calCell.today{background:rgba(0,122,255,.1)}
+.calCell.other{opacity:.18}
+.cellNum{font-size:14px;font-weight:400;line-height:1;margin-bottom:4px;
+  width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:50%}
+.calSun .cellNum{color:#FF3B30}
+.calSat .cellNum{color:#007AFF}
+.calCell.today .cellNum{background:var(--pri);color:#fff!important;font-weight:600;font-size:13px}
+.cellDots{display:flex;flex-wrap:wrap;gap:2px;justify-content:center;max-width:34px}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.calLegend{padding:10px 16px;background:var(--bg);
+  display:flex;flex-wrap:wrap;gap:8px;border-top:.5px solid var(--sep)}
+.legItem{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--lbl2)}
+.legDot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.wardGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;
+  padding:12px 16px;background:var(--bg2)}
+.wardBtn{padding:11px 4px;font-size:13px;font-weight:500;
+  border:1.5px solid var(--sep);border-radius:8px;background:var(--bg2);
+  cursor:pointer;color:var(--lbl);transition:all .15s}
+.wardBtn.active{background:var(--pri);border-color:var(--pri);color:#fff}
+.areaPad{padding:12px 16px;background:var(--bg2)}
+.searchWrap{position:relative;margin-bottom:8px}
+.searchWrap input{width:100%;padding:10px 12px 10px 36px;
+  border:1.5px solid var(--sep);border-radius:10px;
+  font-size:16px;outline:none;background:var(--bg);color:var(--lbl)}
+.searchWrap input:focus{border-color:var(--pri);background:var(--bg2)}
+.searchWrap::before{content:"🔍";position:absolute;left:10px;top:50%;
+  transform:translateY(-50%);font-size:14px;pointer-events:none}
+.areaList{max-height:228px;overflow-y:auto;
+  border:.5px solid var(--sep);border-radius:10px;background:var(--bg2)}
+.areaItem{padding:12px 14px;font-size:15px;cursor:pointer;
+  border-bottom:.5px solid var(--sep);
+  display:flex;justify-content:space-between;align-items:center}
+.areaItem:last-child{border-bottom:none}
+.areaItem.sel{background:rgba(0,122,255,.1)}
+.areaCode{font-size:11px;color:var(--lbl3);flex-shrink:0;margin-left:8px}
+.toggle{position:relative;width:51px;height:31px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.tSlider{position:absolute;inset:0;background:#E5E5EA;border-radius:16px;
+  transition:.3s;cursor:pointer}
+.tSlider::before{content:'';position:absolute;width:27px;height:27px;
+  left:2px;top:2px;background:#fff;border-radius:50%;
+  box-shadow:0 2px 5px rgba(0,0,0,.3);transition:.3s}
+.toggle input:checked+.tSlider{background:#34C759}
+.toggle input:checked+.tSlider::before{transform:translateX(20px)}
+.instCard{margin:0 16px 16px;padding:16px;background:var(--bg2);
+  border-radius:12px;border:.5px solid var(--sep)}
+.instCard h3{font-size:15px;font-weight:600;margin-bottom:8px}
+.instCard ol{padding-left:20px;font-size:14px;line-height:1.9;color:var(--lbl2)}
+.instNote{font-size:12px;color:var(--lbl3);margin-top:8px;line-height:1.5}
+.tabBar{
+  height:calc(var(--tabh) + env(safe-area-inset-bottom,0px));
+  background:rgba(249,249,249,.88);
+  backdrop-filter:blur(20px) saturate(180%);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);
+  border-top:.5px solid var(--sep);
+  display:flex;align-items:flex-start;padding-top:4px;
+  flex-shrink:0;z-index:100}
+.tabBtn{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;
+  padding:3px 0;background:none;border:none;cursor:pointer;color:var(--lbl3)}
+.tabBtn.active{color:var(--pri)}
+.tabIcon{font-size:24px;line-height:1}
+.tabLabel{font-size:10px;font-weight:500}
 </style>
 </head>
 <body>
+<div id="app">
 
-<div class="hdr">
-  <div class="hdr-icon">🗑️</div>
-  <div>
-    <h1>新潟市 ごみカレンダー</h1>
-    <p>令和8年度（2026年4月〜2027年3月）</p>
-  </div>
-</div>
-
-<div class="wrap">
-
-  <!-- ① 区を選ぶ -->
-  <div class="card">
-    <div class="card-label">① 区を選ぶ</div>
-    <div class="ward-grid" id="wardGrid"></div>
-  </div>
-
-  <!-- ② 地区を選ぶ -->
-  <div class="card hidden" id="areaCard">
-    <div class="card-label">② 地区・町名を選ぶ</div>
-    <div class="search-box">
-      <input type="text" id="areaSearch" placeholder="町名で絞り込み…" autocomplete="off">
+  <!-- ═══════════════════ 今日 ═══════════════════ -->
+  <div id="screen-today" class="screen active">
+    <div class="sHdr">
+      <h1 id="hdrArea">新潟市 ごみカレンダー</h1>
+      <small id="hdrWard"></small>
     </div>
-    <div class="area-list" id="areaList"></div>
-    <div class="selected-tag" id="selectedTag"></div>
+    <div id="todayBody"></div>
   </div>
 
-  <!-- 今日のごみ -->
-  <div class="card hidden" id="todayCard">
-    <div class="today-head">
-      <div>
-        <div class="today-date" id="todayDate"></div>
-        <div class="today-sub" id="todayArea"></div>
+  <!-- ═══════════════════ カレンダー ═══════════════════ -->
+  <div id="screen-cal" class="screen">
+    <div class="calNavBar">
+      <button class="calNavBtn" id="prevBtn">&#8249;</button>
+      <h2 id="calTitle"></h2>
+      <button class="calNavBtn" id="nextBtn">&#8250;</button>
+    </div>
+    <div class="calWrap">
+      <div class="calDows" id="calDows"></div>
+      <div class="calCells" id="calCells"></div>
+    </div>
+    <div class="calLegend" id="calLegend"></div>
+  </div>
+
+  <!-- ═══════════════════ 設定 ═══════════════════ -->
+  <div id="screen-settings" class="screen">
+    <div class="sHdr"><h1>設定</h1></div>
+    <p class="secLabel">&#9312; 区を選ぶ</p>
+    <div class="wardGrid" id="wardGrid"></div>
+    <div id="areaSection" style="display:none">
+      <p class="secLabel">&#9313; 地区・町名を選ぶ</p>
+      <div class="areaPad">
+        <div class="searchWrap">
+          <input type="text" id="areaSearch" placeholder="町名で絞り込み…" autocomplete="off" autocorrect="off">
+        </div>
+        <div class="areaList" id="areaList"></div>
       </div>
     </div>
-    <div class="chips" id="todayChips"></div>
+    <p class="secLabel">通知</p>
+    <div class="secBody">
+      <div class="row">
+        <span class="rowLbl">今日のごみ通知</span>
+        <label class="toggle">
+          <input type="checkbox" id="notifToggle">
+          <span class="tSlider"></span>
+        </label>
+      </div>
+      <div class="row" id="notifNote" style="display:none">
+        <span class="rowSub">ホーム画面に追加してアプリを開くと今日の収集情報が通知されます</span>
+      </div>
+    </div>
+    <p class="secLabel">ホーム画面に追加</p>
+    <div style="padding:0 16px 16px">
+      <div class="instCard">
+        <h3>📱 アプリとして使う</h3>
+        <ol>
+          <li>Safariでこのページを開く</li>
+          <li>下部の共有ボタン <strong>□↑</strong> をタップ</li>
+          <li>「ホーム画面に追加」を選択</li>
+          <li>追加後はアプリアイコンから起動</li>
+        </ol>
+        <p class="instNote">※ iOS 16.4以上 + ホーム画面追加後に通知機能が使えます<br>※ Chrome・Firefoxでは通知非対応</p>
+      </div>
+    </div>
   </div>
 
-  <!-- カレンダー -->
-  <div class="card hidden" id="calCard">
-    <div class="cal-nav-row">
-      <button class="nav-btn" id="prevBtn">◀</button>
-      <h2 id="calTitle"></h2>
-      <button class="nav-btn" id="nextBtn">▶</button>
-    </div>
-    <div class="cal-grid" id="calGrid"></div>
-    <div class="legend" id="legend"></div>
-  </div>
+  <!-- ═══════════════════ Tab Bar ═══════════════════ -->
+  <nav class="tabBar">
+    <button class="tabBtn active" data-tab="today">
+      <span class="tabIcon">🗑️</span>
+      <span class="tabLabel">今日</span>
+    </button>
+    <button class="tabBtn" data-tab="cal">
+      <span class="tabIcon">📅</span>
+      <span class="tabLabel">カレンダー</span>
+    </button>
+    <button class="tabBtn" data-tab="settings">
+      <span class="tabIcon">⚙️</span>
+      <span class="tabLabel">設定</span>
+    </button>
+  </nav>
 
 </div>
-
 <script src="gomi-data.js"></script>
 <script>
 (function(){
-  const COLORS={
-    "燃やすごみ":"#e53935","プラマーク容器包装":"#1565c0",
-    "飲食用缶":"#00838f","ペットボトル":"#00acc1",
-    "飲食用・化粧品びん":"#c2185b","古紙類":"#ef6c00",
-    "枝・葉・草":"#388e3c","特定5品目":"#7b1fa2","燃やさないごみ":"#757575"
-  };
-  const ICONS={
-    "燃やすごみ":"🔥","プラマーク容器包装":"♻️","飲食用缶":"🥫",
-    "ペットボトル":"🧴","飲食用・化粧品びん":"🍶","古紙類":"📰",
-    "枝・葉・草":"🌿","特定5品目":"🪣","燃やさないごみ":"🗑️"
-  };
-  const SHORT={
-    "燃やすごみ":"燃やすごみ","プラマーク容器包装":"プラマーク",
-    "飲食用缶":"飲食缶","ペットボトル":"PET","飲食用・化粧品びん":"びん",
-    "古紙類":"古紙","枝・葉・草":"枝葉草","特定5品目":"特定5品目","燃やさないごみ":"燃やさないごみ"
-  };
+'use strict';
 
-  const todayStr=(()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})();
-  const DAYS=['日','月','火','水','木','金','土'];
+/* ── 定数 ── */
+const COLORS={
+  '燃やすごみ':'#FF3B30','プラマーク容器包装':'#007AFF',
+  '飲食用缶':'#00838F','ペットボトル':'#00ACC1',
+  '飲食用・化粧品びん':'#FF2D55','古紙類':'#FF9500',
+  '枝・葉・草':'#34C759','特定5品目':'#AF52DE','燃やさないごみ':'#8E8E93'
+};
+const ICONS={
+  '燃やすごみ':'🔥','プラマーク容器包装':'♻️','飲食用缶':'🥫',
+  'ペットボトル':'🧴','飲食用・化粧品びん':'🍶','古紙類':'📰',
+  '枝・葉・草':'🌿','特定5品目':'🪣','燃やさないごみ':'🗑️'
+};
+const DAYS=['日','月','火','水','木','金','土'];
 
-  let selectedWard='', selectedRegionId=null, selectedAreaName='';
-  let calYear=new Date().getFullYear(), calMonth=new Date().getMonth()+1;
+/* ── 状態 ── */
+let ward='', regionId=null, areaName='';
+let calY=new Date().getFullYear(), calM=new Date().getMonth()+1;
+let swReg=null;
 
-  function clr(el){while(el.firstChild)el.removeChild(el.firstChild)}
+/* ── ヘルパー ── */
+function clr(el){while(el.firstChild)el.removeChild(el.firstChild)}
+function ds(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function mk(tag,cls){const el=document.createElement(tag);if(cls)el.className=cls;return el}
+const today=ds(new Date());
+function sch(rid,date){return(GOMI_DATA.schedules[String(rid)]||{})[date]||[]}
 
-  /* ─── 区ボタン描画 ─── */
-  const wardGrid=document.getElementById('wardGrid');
-  const wards=Object.keys(GOMI_DATA.areas).sort();
-  wards.forEach(w=>{
-    const btn=document.createElement('button');
-    btn.className='ward-btn'; btn.textContent=w;
-    btn.addEventListener('click',()=>onWardClick(w,btn));
-    wardGrid.appendChild(btn);
-  });
+/* ── Service Worker ── */
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').then(r=>{swReg=r}).catch(()=>{});
+}
 
-  function onWardClick(ward,btn){
-    document.querySelectorAll('.ward-btn').forEach(b=>b.classList.remove('active'));
+/* ── タブ切替 ── */
+document.querySelectorAll('.tabBtn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const tab=btn.dataset.tab;
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.querySelectorAll('.tabBtn').forEach(b=>b.classList.remove('active'));
+    document.getElementById('screen-'+tab).classList.add('active');
     btn.classList.add('active');
-    selectedWard=ward;
+    if(tab==='cal') renderCal(calY,calM);
+  });
+});
+
+window.goSettings=function(){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tabBtn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('screen-settings').classList.add('active');
+  document.querySelector('[data-tab="settings"]').classList.add('active');
+};
+
+function goToday(){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tabBtn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('screen-today').classList.add('active');
+  document.querySelector('[data-tab="today"]').classList.add('active');
+}
+
+/* ── 区ボタン ── */
+const wardGrid=document.getElementById('wardGrid');
+Object.keys(GOMI_DATA.areas).sort().forEach(w=>{
+  const btn=mk('button','wardBtn');
+  btn.textContent=w;
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.wardBtn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    ward=w;
     document.getElementById('areaSearch').value='';
-    document.getElementById('areaCard').classList.remove('hidden');
+    document.getElementById('areaSection').style.display='';
     renderAreaList('');
+  });
+  wardGrid.appendChild(btn);
+});
+
+/* ── 地区リスト ── */
+const areaSearch=document.getElementById('areaSearch');
+areaSearch.addEventListener('input',()=>renderAreaList(areaSearch.value.trim()));
+
+function renderAreaList(q){
+  const src=GOMI_DATA.areas[ward]||[];
+  const filtered=q?src.filter(a=>a.n.includes(q)):src;
+  const el=document.getElementById('areaList');
+  clr(el);
+  filtered.slice(0,300).forEach(a=>{
+    const item=mk('div','areaItem'+(a.r===regionId&&a.n===areaName?' sel':''));
+    const nm=mk('span'); nm.textContent=a.n;
+    const cd=mk('span','areaCode'); cd.textContent=a.c;
+    item.appendChild(nm); item.appendChild(cd);
+    item.addEventListener('click',()=>selectArea(a.r,a.n));
+    el.appendChild(item);
+  });
+}
+
+function selectArea(rid,name){
+  regionId=rid; areaName=name;
+  renderAreaList(areaSearch.value.trim());
+  localStorage.setItem('gomi_v3',JSON.stringify({ward,rid,areaName:name}));
+  renderToday();
+  goToday();
+  maybeNotify();
+}
+
+/* ── 今日の表示 ── */
+function renderToday(){
+  const body=document.getElementById('todayBody');
+  clr(body);
+
+  if(!regionId){
+    document.getElementById('hdrArea').textContent='新潟市 ごみカレンダー';
+    document.getElementById('hdrWard').textContent='';
+    const empty=mk('div','empty');
+    const h2=mk('h2'); h2.textContent='地区を設定してください';
+    const p=mk('p'); p.textContent='設定タブから区と地区を選ぶと\nごみ収集カレンダーが表示されます';
+    p.style.whiteSpace='pre-line';
+    const btn=mk('button','emptyBtn'); btn.textContent='地区を設定する';
+    btn.addEventListener('click',goSettings);
+    empty.appendChild(h2); empty.appendChild(p); empty.appendChild(btn);
+    body.appendChild(empty);
+    return;
   }
 
-  /* ─── 地区リスト ─── */
-  const areaSearch=document.getElementById('areaSearch');
-  const areaListEl=document.getElementById('areaList');
-  areaSearch.addEventListener('input',()=>renderAreaList(areaSearch.value.trim()));
+  document.getElementById('hdrArea').textContent=areaName;
+  document.getElementById('hdrWard').textContent=ward;
 
-  function renderAreaList(q){
-    const src=GOMI_DATA.areas[selectedWard]||[];
-    const filtered=q?src.filter(a=>a.n.includes(q)):src;
-    clr(areaListEl);
-    filtered.forEach(a=>{
-      const item=document.createElement('div');
-      item.className='area-item'+(a.r===selectedRegionId&&a.n===selectedAreaName?' active':'');
-      const nm=document.createElement('span'); nm.textContent=a.n;
-      const cd=document.createElement('span'); cd.className='area-code'; cd.textContent=a.c;
-      item.appendChild(nm); item.appendChild(cd);
-      item.addEventListener('click',()=>selectArea(a.r,a.n));
-      areaListEl.appendChild(item);
+  /* hero section */
+  const hero=mk('div','hero');
+  const heroDate=mk('div','heroDate');
+  const d=new Date(today+'T00:00:00');
+  heroDate.textContent=(d.getMonth()+1)+'月'+d.getDate()+'日（'+DAYS[d.getDay()]+'）';
+  const heroArea=mk('div','heroArea'); heroArea.textContent=ward+' '+areaName;
+  hero.appendChild(heroDate); hero.appendChild(heroArea);
+
+  const types=sch(regionId,today);
+  const chipsEl=mk('div','chips');
+  if(!types.length){
+    const nc=mk('p','noCol'); nc.textContent='🙅 本日の収集なし';
+    chipsEl.appendChild(nc);
+  } else {
+    types.forEach(t=>{
+      const chip=mk('span','chip');
+      chip.style.background=COLORS[t]||'#888';
+      chip.textContent=(ICONS[t]||'')+' '+t;
+      chipsEl.appendChild(chip);
     });
   }
+  hero.appendChild(chipsEl);
+  body.appendChild(hero);
 
-  function selectArea(rid,areaName){
-    selectedRegionId=rid; selectedAreaName=areaName;
-    const tag=document.getElementById('selectedTag');
-    tag.textContent=areaName; tag.style.display='block';
-    renderAreaList(areaSearch.value.trim());
-    localStorage.setItem('gomi_v3',JSON.stringify({ward:selectedWard,rid,areaName}));
-    showCalendar();
+  /* next collections */
+  const labelEl=mk('p','secLabel'); labelEl.textContent='次回の収集';
+  body.appendChild(labelEl);
+  const nextBody=mk('div','secBody');
+  const upcoming=getUpcoming(regionId,today,5);
+  if(!upcoming.length){
+    const r=mk('div','row');
+    const s=mk('span','rowSub'); s.textContent='この地区の今後の収集予定なし';
+    r.appendChild(s); nextBody.appendChild(r);
+  } else {
+    upcoming.forEach(u=>{
+      const ud=new Date(u.date+'T00:00:00');
+      const dow=ud.getDay();
+      const row=mk('div','nextRow');
+      const dateEl=mk('div','nextDate');
+      dateEl.textContent=(ud.getMonth()+1)+'月'+ud.getDate()+'日（'+DAYS[dow]+'）';
+      if(dow===0) dateEl.style.color='#FF3B30';
+      else if(dow===6) dateEl.style.color='#007AFF';
+      const typesEl=mk('div','nextTypes');
+      typesEl.textContent=u.types.map(t=>(ICONS[t]||'')+' '+t).join('　');
+      row.appendChild(dateEl); row.appendChild(typesEl);
+      nextBody.appendChild(row);
+    });
   }
+  body.appendChild(nextBody);
+}
 
-  /* ─── 表示 ─── */
-  function showCalendar(){
-    document.getElementById('todayCard').classList.remove('hidden');
-    document.getElementById('calCard').classList.remove('hidden');
-    renderToday();
-    renderCalendar(calYear,calMonth);
+function getUpcoming(rid,fromDate,count){
+  const s=GOMI_DATA.schedules[String(rid)]||{};
+  const result=[];
+  const d=new Date(fromDate+'T00:00:00');
+  d.setDate(d.getDate()+1);
+  let limit=90;
+  while(result.length<count&&limit-->0){
+    const key=ds(d);
+    if(s[key]&&s[key].length) result.push({date:key,types:s[key]});
+    d.setDate(d.getDate()+1);
   }
+  return result;
+}
 
-  function renderToday(){
-    const sch=GOMI_DATA.schedules[String(selectedRegionId)]||{};
-    const types=sch[todayStr]||[];
-    const d=new Date(todayStr+'T00:00:00');
-    document.getElementById('todayDate').textContent=
-      d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日（'+DAYS[d.getDay()]+'）';
-    document.getElementById('todayArea').textContent=selectedWard+' '+selectedAreaName;
-    const chips=document.getElementById('todayChips');
-    clr(chips);
-    if(types.length===0){
-      const el=document.createElement('span'); el.className='no-col'; el.textContent='本日は収集なし';
-      chips.appendChild(el);
-    } else {
+/* ── カレンダー ── */
+document.getElementById('prevBtn').addEventListener('click',()=>{
+  calM--; if(calM<1){calM=12;calY--;} renderCal(calY,calM);
+});
+document.getElementById('nextBtn').addEventListener('click',()=>{
+  calM++; if(calM>12){calM=1;calY++;} renderCal(calY,calM);
+});
+
+function renderCal(year,month){
+  document.getElementById('calTitle').textContent=year+'年'+month+'月';
+  const dows=document.getElementById('calDows'); clr(dows);
+  DAYS.forEach(d=>{
+    const el=mk('div','calDow'); el.textContent=d; dows.appendChild(el);
+  });
+
+  const cells=document.getElementById('calCells'); clr(cells);
+  const s=regionId?(GOMI_DATA.schedules[String(regionId)]||{}):{};
+  const used=new Set();
+
+  const firstDow=new Date(year,month-1,1).getDay();
+  const lastD=new Date(year,month,0).getDate();
+
+  for(let i=0;i<firstDow;i++){
+    cells.appendChild(mk('div','calCell other'));
+  }
+  for(let d=1;d<=lastD;d++){
+    const dow=new Date(year,month-1,d).getDay();
+    const el=mk('div','calCell'+(dow===0?' calSun':dow===6?' calSat':''));
+    const key=year+'-'+String(month).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    if(key===today) el.classList.add('today');
+    const num=mk('div','cellNum'); num.textContent=d; el.appendChild(num);
+    const types=s[key]||[];
+    if(types.length){
+      const dots=mk('div','cellDots');
       types.forEach(t=>{
-        const el=document.createElement('span'); el.className='chip';
-        el.style.background=COLORS[t]||'#888';
-        el.textContent=(ICONS[t]||'')+' '+t;
-        chips.appendChild(el);
+        used.add(t);
+        const dot=mk('span','dot');
+        dot.style.background=COLORS[t]||'#888'; dot.title=t;
+        dots.appendChild(dot);
       });
+      el.appendChild(dots);
     }
+    cells.appendChild(el);
   }
 
-  function renderCalendar(year,month){
-    document.getElementById('calTitle').textContent=year+'年'+month+'月';
-    const sch=GOMI_DATA.schedules[String(selectedRegionId)]||{};
-    const grid=document.getElementById('calGrid');
-    clr(grid);
-    DAYS.forEach(d=>{
-      const el=document.createElement('div'); el.className='cal-dow'; el.textContent=d;
-      grid.appendChild(el);
-    });
-    const firstDay=new Date(year,month-1,1).getDay();
-    const lastDate=new Date(year,month,0).getDate();
-    const used=new Set();
-    for(let i=0;i<firstDay;i++){
-      const el=document.createElement('div'); el.className='cal-day other'; grid.appendChild(el);
+  const lg=document.getElementById('calLegend'); clr(lg);
+  used.forEach(t=>{
+    const it=mk('div','legItem');
+    const dot=mk('div','legDot'); dot.style.background=COLORS[t]||'#888';
+    const lb=mk('span'); lb.textContent=t;
+    it.appendChild(dot); it.appendChild(lb); lg.appendChild(it);
+  });
+}
+
+/* ── 通知 ── */
+const notifToggle=document.getElementById('notifToggle');
+notifToggle.checked=localStorage.getItem('gomi_notif')==='1';
+syncNotifNote();
+
+notifToggle.addEventListener('change',async()=>{
+  if(notifToggle.checked){
+    if(!('Notification' in window)){
+      notifToggle.checked=false;
+      alert('このブラウザは通知に対応していません');
+      return;
     }
-    for(let d=1;d<=lastDate;d++){
-      const dow=new Date(year,month-1,d).getDay();
-      const el=document.createElement('div');
-      el.className='cal-day'+(dow===0?' cal-sun':dow===6?' cal-sat':'');
-      const ds=year+'-'+String(month).padStart(2,'0')+'-'+String(d).padStart(2,'0');
-      if(ds===todayStr)el.classList.add('today');
-      const num=document.createElement('div'); num.className='day-n'; num.textContent=d;
-      el.appendChild(num);
-      const types=sch[ds]||[];
-      if(types.length){
-        const tags=document.createElement('div'); tags.className='tags';
-        types.forEach(t=>{
-          used.add(t);
-          const tag=document.createElement('div'); tag.className='tag';
-          tag.style.background=COLORS[t]||'#888';
-          tag.title=t; tag.textContent=(ICONS[t]||'')+(SHORT[t]||t);
-          tags.appendChild(tag);
-        });
-        el.appendChild(tags);
-      }
-      grid.appendChild(el);
+    const perm=await Notification.requestPermission();
+    if(perm!=='granted'){
+      notifToggle.checked=false;
+      alert('通知が許可されませんでした。\nSafari設定からこのサイトの通知を許可してください');
+      return;
     }
-    const lg=document.getElementById('legend'); clr(lg);
-    used.forEach(t=>{
-      const it=document.createElement('div'); it.className='leg';
-      const dot=document.createElement('div'); dot.className='leg-dot'; dot.style.background=COLORS[t]||'#888';
-      const lb=document.createElement('span'); lb.textContent=t;
-      it.appendChild(dot); it.appendChild(lb); lg.appendChild(it);
-    });
+    localStorage.setItem('gomi_notif','1');
+    maybeNotify();
+  } else {
+    localStorage.removeItem('gomi_notif');
   }
+  syncNotifNote();
+});
 
-  document.getElementById('prevBtn').addEventListener('click',()=>{
-    calMonth--; if(calMonth<1){calMonth=12;calYear--;} renderCalendar(calYear,calMonth);
-  });
-  document.getElementById('nextBtn').addEventListener('click',()=>{
-    calMonth++; if(calMonth>12){calMonth=1;calYear++;} renderCalendar(calYear,calMonth);
-  });
+function syncNotifNote(){
+  document.getElementById('notifNote').style.display=notifToggle.checked?'flex':'none';
+}
 
-  /* ─── 前回選択を復元 ─── */
+async function maybeNotify(){
+  if(!regionId) return;
+  if(localStorage.getItem('gomi_notif')!=='1') return;
+  if(!('Notification' in window)||Notification.permission!=='granted') return;
+  if(localStorage.getItem('gomi_notified')===today) return;
+  let reg=swReg;
+  if(!reg){try{reg=await navigator.serviceWorker.ready}catch(e){return}}
+  const sw=reg.active||reg.installing||reg.waiting;
+  if(sw){
+    sw.postMessage({type:'NOTIFY_TODAY',types:sch(regionId,today),areaName:ward+' '+areaName});
+    localStorage.setItem('gomi_notified',today);
+  }
+}
+
+/* ── 前回の地区を復元 ── */
+(function restore(){
   const saved=localStorage.getItem('gomi_v3');
-  if(saved){
-    try{
-      const {ward,rid,areaName}=JSON.parse(saved);
-      const btn=Array.from(document.querySelectorAll('.ward-btn')).find(b=>b.textContent===ward);
-      if(btn){
-        btn.click();
-        selectedRegionId=rid; selectedAreaName=areaName;
-        const tag=document.getElementById('selectedTag');
-        tag.textContent=areaName; tag.style.display='block';
-        renderAreaList('');
-        showCalendar();
-      }
-    }catch(e){}
-  }
+  if(!saved) return;
+  try{
+    const data=JSON.parse(saved);
+    const btn=Array.from(document.querySelectorAll('.wardBtn')).find(b=>b.textContent===data.ward);
+    if(!btn) return;
+    btn.click();
+    regionId=data.rid; areaName=data.areaName;
+    renderAreaList('');
+  }catch(e){}
+})();
+
+renderToday();
+renderCal(calY,calM);
+
 })();
 </script>
 </body>
