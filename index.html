@@ -622,6 +622,45 @@ function renderToday(){
   hero.appendChild(chipsEl);
   body.appendChild(hero);
 
+  /* today's sorting guide */
+  if(types.length){
+    const gLbl=mk('p','secLabel'); gLbl.textContent='本日のごみの分別'; body.appendChild(gLbl);
+    const gSec=mk('div');
+    types.forEach(t=>{
+      const info=GOMI_INFO[t]; if(!info) return;
+      const color=COLORS[t]||'#888';
+      const row=mk('div','typeRow open'); // デフォルト展開
+      const hd=mk('div','typeRowHd');
+      const bar=mk('div','typeColorBar'); bar.style.background=color;
+      const icon=mk('span','typeIcon'); icon.textContent=ICONS[t]||'';
+      const name=mk('span','typeName'); name.textContent=t;
+      const chev=mk('span','chevron'); chev.textContent='›';
+      hd.appendChild(bar); hd.appendChild(icon); hd.appendChild(name); hd.appendChild(chev);
+
+      const bd=mk('div','typeBody');
+      const bag=mk('div','guideBag'); bag.textContent='袋: '+info.bag; bd.appendChild(bag);
+
+      const okSec=mk('div','guideSection');
+      const okHd=mk('div','guideSectionHd'); okHd.textContent='出せるもの';
+      const okList=mk('ul','guideItems');
+      info.ok.forEach(item=>{const li=mk('li','guideItem ok');li.textContent=item;okList.appendChild(li);});
+      okSec.appendChild(okHd); okSec.appendChild(okList); bd.appendChild(okSec);
+
+      const ngSec=mk('div','guideSection');
+      const ngHd=mk('div','guideSectionHd'); ngHd.textContent='出せないもの';
+      const ngList=mk('ul','guideItems');
+      info.ng.forEach(item=>{const li=mk('li','guideItem ng');li.textContent=item;ngList.appendChild(li);});
+      ngSec.appendChild(ngHd); ngSec.appendChild(ngList); bd.appendChild(ngSec);
+
+      if(info.note){const note=mk('div','guideNote');note.textContent='⚠️ '+info.note;bd.appendChild(note);}
+
+      hd.addEventListener('click',()=>row.classList.toggle('open'));
+      row.appendChild(hd); row.appendChild(bd);
+      gSec.appendChild(row);
+    });
+    body.appendChild(gSec);
+  }
+
   /* next collections */
   const lbl=mk('p','secLabel'); lbl.textContent='次回の収集'; body.appendChild(lbl);
   const nb=mk('div','secBody');
