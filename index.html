@@ -13,27 +13,32 @@
 <style>
 :root{
   --pri:#007AFF;--bg:#F2F2F7;--bg2:#FFFFFF;
-  --lbl:#000000;--lbl2:#3C3C43;--lbl3:#6C6C70;
+  --lbl:#000;--lbl2:#3C3C43;--lbl3:#6C6C70;
   --sep:rgba(60,60,67,.18);--tabh:49px;
+  --red:#FF3B30;--org:#FF9500;--grn:#34C759;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden}
 body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans',sans-serif;
   background:var(--bg);color:var(--lbl)}
 #app{height:100%;display:flex;flex-direction:column}
-.screen{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
-  display:none;
-  padding-bottom:calc(var(--tabh) + env(safe-area-inset-bottom,0px) + 8px)}
+
+/* ── Screens ── */
+.screen{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;display:none;
+  padding-bottom:calc(var(--tabh)+env(safe-area-inset-bottom,0px)+8px)}
 .screen.active{display:block}
-.sHdr{
-  position:sticky;top:0;z-index:10;
-  padding:calc(env(safe-area-inset-top,0px) + 12px) 16px 12px;
+
+/* ── Sticky nav ── */
+.sHdr{position:sticky;top:0;z-index:10;
+  padding:calc(env(safe-area-inset-top,0px)+12px) 16px 12px;
   background:rgba(242,242,247,.92);
   backdrop-filter:blur(16px) saturate(180%);
   -webkit-backdrop-filter:blur(16px) saturate(180%);
   border-bottom:.5px solid var(--sep)}
 .sHdr h1{font-size:17px;font-weight:600;letter-spacing:-.02em}
 .sHdr small{font-size:12px;color:var(--lbl3);display:block;margin-top:1px}
+
+/* ── Grouped sections ── */
 .secLabel{padding:8px 16px 4px;font-size:12px;color:var(--lbl3);
   text-transform:uppercase;letter-spacing:.04em;margin-top:16px}
 .secBody{background:var(--bg2);
@@ -43,6 +48,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans',sans-serif;
 .row:last-child{border-bottom:none}
 .rowLbl{flex:1;font-size:17px}
 .rowSub{font-size:13px;color:var(--lbl3);line-height:1.5}
+
+/* ── Today hero ── */
 .hero{background:var(--bg2);padding:20px 16px 16px;
   border-bottom:.5px solid var(--sep)}
 .heroDate{font-size:26px;font-weight:700;letter-spacing:-.02em}
@@ -56,15 +63,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans',sans-serif;
 .nextRow:last-child{border-bottom:none}
 .nextDate{font-size:15px;font-weight:500;min-width:110px;flex-shrink:0}
 .nextTypes{font-size:13px;color:var(--lbl2);flex:1}
+
+/* ── Empty state ── */
 .empty{text-align:center;padding:64px 24px 24px;color:var(--lbl3)}
 .empty h2{font-size:20px;font-weight:600;color:var(--lbl);margin-bottom:8px}
-.empty p{font-size:15px;line-height:1.6}
+.empty p{font-size:15px;line-height:1.6;white-space:pre-line}
 .emptyBtn{margin-top:20px;padding:14px 32px;background:var(--pri);
   color:#fff;border:none;border-radius:12px;font-size:17px;font-weight:600;cursor:pointer}
-.calNavBar{
-  position:sticky;top:0;z-index:10;
+
+/* ── Calendar ── */
+.calNavBar{position:sticky;top:0;z-index:10;
   display:flex;align-items:center;justify-content:space-between;
-  padding:calc(env(safe-area-inset-top,0px) + 10px) 16px 10px;
+  padding:calc(env(safe-area-inset-top,0px)+10px) 16px 10px;
   background:rgba(242,242,247,.92);
   backdrop-filter:blur(16px) saturate(180%);
   -webkit-backdrop-filter:blur(16px) saturate(180%);
@@ -72,22 +82,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans',sans-serif;
 .calNavBar h2{font-size:17px;font-weight:600}
 .calNavBtn{width:36px;height:36px;border:none;border-radius:50%;
   background:rgba(0,122,255,.12);color:var(--pri);
-  font-size:20px;font-weight:300;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;line-height:1;padding:0}
+  font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
 .calWrap{padding:0 8px 12px;background:var(--bg2)}
 .calDows{display:grid;grid-template-columns:repeat(7,1fr);padding:6px 0 2px}
 .calDow{text-align:center;font-size:12px;font-weight:500;color:var(--lbl3);padding:4px 0}
-.calDow:first-child{color:#FF3B30}
-.calDow:last-child{color:#007AFF}
+.calDow:first-child{color:var(--red)}
+.calDow:last-child{color:var(--pri)}
 .calCells{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
 .calCell{min-height:54px;display:flex;flex-direction:column;align-items:center;
   padding:4px 2px 3px;border-radius:8px}
 .calCell.today{background:rgba(0,122,255,.1)}
 .calCell.other{opacity:.18}
-.cellNum{font-size:14px;font-weight:400;line-height:1;margin-bottom:4px;
+.cellNum{font-size:14px;line-height:1;margin-bottom:4px;
   width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:50%}
-.calSun .cellNum{color:#FF3B30}
-.calSat .cellNum{color:#007AFF}
+.calSun .cellNum{color:var(--red)}
+.calSat .cellNum{color:var(--pri)}
 .calCell.today .cellNum{background:var(--pri);color:#fff!important;font-weight:600;font-size:13px}
 .cellDots{display:flex;flex-wrap:wrap;gap:2px;justify-content:center;max-width:34px}
 .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
@@ -95,11 +104,46 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans',sans-serif;
   display:flex;flex-wrap:wrap;gap:8px;border-top:.5px solid var(--sep)}
 .legItem{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--lbl2)}
 .legDot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+
+/* ── 分別ガイド ── */
+.typeRow{background:var(--bg2);border-bottom:.5px solid var(--sep)}
+.typeRow:last-child{border-bottom:none}
+.typeRowHd{display:flex;align-items:center;gap:10px;padding:13px 16px;
+  cursor:pointer;min-height:52px;user-select:none}
+.typeColorBar{width:4px;height:32px;border-radius:2px;flex-shrink:0}
+.typeIcon{font-size:22px;line-height:1;flex-shrink:0}
+.typeName{flex:1;font-size:15px;font-weight:500}
+.freqBadge{font-size:11px;font-weight:600;padding:3px 8px;border-radius:10px;
+  background:rgba(0,122,255,.12);color:var(--pri);flex-shrink:0}
+.freqMonthly{background:rgba(255,149,0,.15);color:var(--org)}
+.chevron{font-size:18px;color:var(--lbl3);transition:transform .2s;flex-shrink:0;font-weight:300}
+.typeRow.open .chevron{transform:rotate(90deg)}
+.typeBody{display:none;padding:0 16px 16px}
+.typeRow.open .typeBody{display:block}
+.guideBag{font-size:13px;color:var(--lbl2);padding:8px 12px;
+  background:var(--bg);border-radius:8px;margin-bottom:12px}
+.guideSection{margin-bottom:10px}
+.guideSectionHd{font-size:12px;font-weight:600;color:var(--lbl3);
+  text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.guideItems{list-style:none;display:flex;flex-direction:column;gap:4px}
+.guideItem{font-size:14px;color:var(--lbl);padding-left:4px}
+.guideItem.ok::before{content:'✓ ';color:var(--grn);font-weight:700}
+.guideItem.ng{color:var(--lbl2)}
+.guideItem.ng::before{content:'✗ ';color:var(--red);font-weight:700}
+.guideNote{font-size:13px;color:var(--org);background:rgba(255,149,0,.08);
+  padding:9px 12px;border-radius:8px;margin-top:10px;line-height:1.5}
+.monthlyBanner{margin:12px 16px 0;padding:12px 14px;
+  background:rgba(255,149,0,.1);border-radius:10px;
+  border-left:4px solid var(--org)}
+.monthlyBanner h3{font-size:14px;font-weight:600;color:var(--org);margin-bottom:3px}
+.monthlyBanner p{font-size:13px;color:var(--lbl2);line-height:1.5}
+
+/* ── Settings ── */
 .wardGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;
   padding:12px 16px;background:var(--bg2)}
 .wardBtn{padding:11px 4px;font-size:13px;font-weight:500;
   border:1.5px solid var(--sep);border-radius:8px;background:var(--bg2);
-  cursor:pointer;color:var(--lbl);transition:all .15s}
+  cursor:pointer;color:var(--lbl)}
 .wardBtn.active{background:var(--pri);border-color:var(--pri);color:#fff}
 .areaPad{padding:12px 16px;background:var(--bg2)}
 .searchWrap{position:relative;margin-bottom:8px}
@@ -117,6 +161,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans',sans-serif;
 .areaItem:last-child{border-bottom:none}
 .areaItem.sel{background:rgba(0,122,255,.1)}
 .areaCode{font-size:11px;color:var(--lbl3);flex-shrink:0;margin-left:8px}
+
+/* toggle */
 .toggle{position:relative;width:51px;height:31px;flex-shrink:0}
 .toggle input{opacity:0;width:0;height:0;position:absolute}
 .tSlider{position:absolute;inset:0;background:#E5E5EA;border-radius:16px;
@@ -126,13 +172,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans',sans-serif;
   box-shadow:0 2px 5px rgba(0,0,0,.3);transition:.3s}
 .toggle input:checked+.tSlider{background:#34C759}
 .toggle input:checked+.tSlider::before{transform:translateX(20px)}
+
+/* segmented control */
+.segCtrl{display:flex;background:#E5E5EA;border-radius:8px;padding:2px;gap:2px}
+.segBtn{padding:6px 12px;border:none;border-radius:6px;font-size:13px;
+  cursor:pointer;background:transparent;color:var(--lbl)}
+.segBtn.active{background:var(--bg2);box-shadow:0 1px 3px rgba(0,0,0,.15);
+  font-weight:600}
+
+/* install card */
 .instCard{margin:0 16px 16px;padding:16px;background:var(--bg2);
   border-radius:12px;border:.5px solid var(--sep)}
 .instCard h3{font-size:15px;font-weight:600;margin-bottom:8px}
 .instCard ol{padding-left:20px;font-size:14px;line-height:1.9;color:var(--lbl2)}
 .instNote{font-size:12px;color:var(--lbl3);margin-top:8px;line-height:1.5}
+
+/* ── Tab Bar ── */
 .tabBar{
-  height:calc(var(--tabh) + env(safe-area-inset-bottom,0px));
+  height:calc(var(--tabh)+env(safe-area-inset-bottom,0px));
   background:rgba(249,249,249,.88);
   backdrop-filter:blur(20px) saturate(180%);
   -webkit-backdrop-filter:blur(20px) saturate(180%);
@@ -142,14 +199,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans',sans-serif;
 .tabBtn{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;
   padding:3px 0;background:none;border:none;cursor:pointer;color:var(--lbl3)}
 .tabBtn.active{color:var(--pri)}
-.tabIcon{font-size:24px;line-height:1}
+.tabIcon{font-size:22px;line-height:1}
 .tabLabel{font-size:10px;font-weight:500}
 </style>
 </head>
 <body>
 <div id="app">
 
-  <!-- ═══════════════════ 今日 ═══════════════════ -->
+  <!-- ═══ 今日 ═══ -->
   <div id="screen-today" class="screen active">
     <div class="sHdr">
       <h1 id="hdrArea">新潟市 ごみカレンダー</h1>
@@ -158,7 +215,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans',sans-serif;
     <div id="todayBody"></div>
   </div>
 
-  <!-- ═══════════════════ カレンダー ═══════════════════ -->
+  <!-- ═══ カレンダー ═══ -->
   <div id="screen-cal" class="screen">
     <div class="calNavBar">
       <button class="calNavBtn" id="prevBtn">&#8249;</button>
@@ -172,11 +229,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans',sans-serif;
     <div class="calLegend" id="calLegend"></div>
   </div>
 
-  <!-- ═══════════════════ 設定 ═══════════════════ -->
+  <!-- ═══ 分別ガイド ═══ -->
+  <div id="screen-guide" class="screen">
+    <div class="sHdr"><h1>分別ガイド</h1></div>
+    <div class="monthlyBanner">
+      <h3>⚠️ 月1回のごみに注意</h3>
+      <p>燃やさないごみ・特定5品目は月1回のみ。<br>設定タブでリマインド通知を設定できます。</p>
+    </div>
+    <p class="secLabel">収集頻度の多い順</p>
+    <div class="secBody" id="guideList"></div>
+  </div>
+
+  <!-- ═══ 設定 ═══ -->
   <div id="screen-settings" class="screen">
     <div class="sHdr"><h1>設定</h1></div>
+
     <p class="secLabel">&#9312; 区を選ぶ</p>
     <div class="wardGrid" id="wardGrid"></div>
+
     <div id="areaSection" style="display:none">
       <p class="secLabel">&#9313; 地区・町名を選ぶ</p>
       <div class="areaPad">
@@ -186,7 +256,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans',sans-serif;
         <div class="areaList" id="areaList"></div>
       </div>
     </div>
-    <p class="secLabel">通知</p>
+
+    <p class="secLabel">リマインド（月1回ごみ）</p>
+    <div class="secBody" id="remindSection">
+      <!-- JS で生成 -->
+    </div>
+
+    <p class="secLabel">今日の収集通知</p>
     <div class="secBody">
       <div class="row">
         <span class="rowLbl">今日のごみ通知</span>
@@ -199,6 +275,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans',sans-serif;
         <span class="rowSub">ホーム画面に追加してアプリを開くと今日の収集情報が通知されます</span>
       </div>
     </div>
+
     <p class="secLabel">ホーム画面に追加</p>
     <div style="padding:0 16px 16px">
       <div class="instCard">
@@ -209,12 +286,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans',sans-serif;
           <li>「ホーム画面に追加」を選択</li>
           <li>追加後はアプリアイコンから起動</li>
         </ol>
-        <p class="instNote">※ iOS 16.4以上 + ホーム画面追加後に通知機能が使えます<br>※ Chrome・Firefoxでは通知非対応</p>
+        <p class="instNote">※ iOS 16.4以上 + ホーム画面追加後に通知が使えます<br>※ Chrome・Firefoxでは通知非対応</p>
       </div>
     </div>
   </div>
 
-  <!-- ═══════════════════ Tab Bar ═══════════════════ -->
+  <!-- ═══ Tab Bar ═══ -->
   <nav class="tabBar">
     <button class="tabBtn active" data-tab="today">
       <span class="tabIcon">🗑️</span>
@@ -223,6 +300,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans',sans-serif;
     <button class="tabBtn" data-tab="cal">
       <span class="tabIcon">📅</span>
       <span class="tabLabel">カレンダー</span>
+    </button>
+    <button class="tabBtn" data-tab="guide">
+      <span class="tabIcon">📋</span>
+      <span class="tabLabel">分別</span>
     </button>
     <button class="tabBtn" data-tab="settings">
       <span class="tabIcon">⚙️</span>
@@ -236,7 +317,76 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans',sans-serif;
 (function(){
 'use strict';
 
-/* ── 定数 ── */
+/* ── ごみ種別情報 ── */
+const GOMI_INFO = {
+  '燃やすごみ':{
+    freq:'週3回', bag:'黄色の半透明袋（指定袋）',
+    ok:['台所ごみ（生ごみ）','紙くず・汚れた紙類','衣類・繊維くず','革・ゴム製品','木製品','プラマークなしプラスチック','使い捨てカイロ','保冷剤・乾燥剤','園芸土・砂'],
+    ng:['プラマーク付き容器包装 → プラマーク容器包装へ','缶・びん・ペットボトル → 各資源ごみへ'],
+    remind:false,
+  },
+  'プラマーク容器包装':{
+    freq:'週1回', bag:'透明または半透明袋',
+    ok:['食品トレー・パック・カップ','ボトル・チューブ類','袋・ラップ・ネット','発泡スチロール緩衝材','プラ製キャップ・ラベル','医薬品の容器包装'],
+    ng:['バケツ・プランター・洗面器 → 燃やすごみへ','CD・カセット → 燃やすごみへ','皿・食器類 → 燃やすごみへ'],
+    note:'中身を使い切り、軽く洗って汚れを落として出す',
+    remind:false,
+  },
+  '枝・葉・草':{
+    freq:'週1回（1〜2月除く）', bag:'ひもで縛る、または透明袋',
+    ok:['生木の枝（長さ1m・直径15cm以下）','草・落ち葉','家庭の生花'],
+    ng:['家具 → 燃やさないごみへ','野菜くず・果物 → 燃やすごみへ','土・砂 → 燃やすごみへ','竹垣 → 燃やさないごみへ'],
+    remind:false,
+  },
+  '飲食用缶':{
+    freq:'月2回', bag:'透明または半透明袋',
+    ok:['飲料缶（ビール・ジュース等）','お茶・コーヒー缶','缶詰の缶','お菓子缶','ミルク缶'],
+    ng:['スプレー缶・カートリッジ缶 → 特定5品目へ','1斗缶以上の大型缶 → 燃やさないごみへ','工業用油缶等'],
+    note:'軽くすすいで出す',
+    remind:false,
+  },
+  'ペットボトル':{
+    freq:'月2回', bag:'透明または半透明袋',
+    ok:['飲料用ペットボトル','酒類用ペットボトル','しょうゆ用ペットボトル'],
+    ng:['キャップ・ラベル → プラマーク容器包装へ'],
+    note:'キャップとラベルをはずし、軽くすすいで出す',
+    remind:false,
+  },
+  '飲食用・化粧品びん':{
+    freq:'月2回', bag:'透明または半透明袋',
+    ok:['飲料・栄養ドリンク瓶','調味料・ソース瓶','ジャム・コーヒー瓶','化粧品瓶'],
+    ng:['農薬瓶 → 燃やさないごみへ','耐熱ガラス・コップ・グラス → 燃やさないごみへ','哺乳瓶 → 燃やさないごみへ'],
+    remind:false,
+  },
+  '古紙類':{
+    freq:'月2回', bag:'ひもで縛る（袋不要）',
+    ok:['新聞紙（折込みチラシも一緒に）','雑誌・封筒・コピー用紙・包装紙','段ボール（宅配伝票を除く）','紙パック（洗って開いて乾燥させる）'],
+    ng:['ティッシュ・汚れた紙 → 燃やすごみへ','ロウ引き紙（カップ麺容器等） → 燃やすごみへ','感熱紙（レシート） → 燃やすごみへ','写真・ラミネート → 燃やすごみへ'],
+    remind:false,
+  },
+  '特定5品目':{
+    freq:'月1回', bag:'透明または半透明袋',
+    ok:['乾電池類（充電式電池含む）','蛍光管（丸形蛍光灯）','水銀体温計・水銀血圧計','ライター（使い切ってから）','スプレー缶・カートリッジ缶（中身を使い切って）'],
+    ng:['LED・白熱電球 → 燃やさないごみへ','直管型等の大型蛍光灯 → 燃やさないごみへ'],
+    note:'スプレー缶は必ず中身を使い切り、屋外でガス抜きして穴を開けずに出す',
+    remind:true,
+  },
+  '燃やさないごみ':{
+    freq:'月1回', bag:'透明袋（指定袋）',
+    ok:['金属製品（なべ・やかん・フライパン等）','ガラス製品','陶磁器','小型家電','LED・白熱電球','コップ・グラス類'],
+    ng:['缶・びん・ペットボトル → 各資源ごみへ','スプレー缶 → 特定5品目へ','粗大ごみ → 別途申込みが必要'],
+    note:'割れたガラスや陶磁器は新聞紙に包み「割れ物・危険」と書いて出す',
+    remind:true,
+  },
+};
+
+const GUIDE_ORDER = [
+  '燃やすごみ','プラマーク容器包装','枝・葉・草',
+  '飲食用缶','ペットボトル','飲食用・化粧品びん','古紙類',
+  '特定5品目','燃やさないごみ',
+];
+
+/* ── 色・アイコン定数 ── */
 const COLORS={
   '燃やすごみ':'#FF3B30','プラマーク容器包装':'#007AFF',
   '飲食用缶':'#00838F','ペットボトル':'#00ACC1',
@@ -257,8 +407,8 @@ let swReg=null;
 
 /* ── ヘルパー ── */
 function clr(el){while(el.firstChild)el.removeChild(el.firstChild)}
-function ds(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function mk(tag,cls){const el=document.createElement(tag);if(cls)el.className=cls;return el}
+function ds(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 const today=ds(new Date());
 function sch(rid,date){return(GOMI_DATA.schedules[String(rid)]||{})[date]||[]}
 
@@ -285,7 +435,6 @@ window.goSettings=function(){
   document.getElementById('screen-settings').classList.add('active');
   document.querySelector('[data-tab="settings"]').classList.add('active');
 };
-
 function goToday(){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.tabBtn').forEach(b=>b.classList.remove('active'));
@@ -294,7 +443,6 @@ function goToday(){
 }
 
 /* ── 区ボタン ── */
-const wardGrid=document.getElementById('wardGrid');
 Object.keys(GOMI_DATA.areas).sort().forEach(w=>{
   const btn=mk('button','wardBtn');
   btn.textContent=w;
@@ -306,18 +454,16 @@ Object.keys(GOMI_DATA.areas).sort().forEach(w=>{
     document.getElementById('areaSection').style.display='';
     renderAreaList('');
   });
-  wardGrid.appendChild(btn);
+  document.getElementById('wardGrid').appendChild(btn);
 });
 
 /* ── 地区リスト ── */
-const areaSearch=document.getElementById('areaSearch');
-areaSearch.addEventListener('input',()=>renderAreaList(areaSearch.value.trim()));
+document.getElementById('areaSearch').addEventListener('input',e=>renderAreaList(e.target.value.trim()));
 
 function renderAreaList(q){
   const src=GOMI_DATA.areas[ward]||[];
   const filtered=q?src.filter(a=>a.n.includes(q)):src;
-  const el=document.getElementById('areaList');
-  clr(el);
+  const el=document.getElementById('areaList'); clr(el);
   filtered.slice(0,300).forEach(a=>{
     const item=mk('div','areaItem'+(a.r===regionId&&a.n===areaName?' sel':''));
     const nm=mk('span'); nm.textContent=a.n;
@@ -330,17 +476,17 @@ function renderAreaList(q){
 
 function selectArea(rid,name){
   regionId=rid; areaName=name;
-  renderAreaList(areaSearch.value.trim());
+  renderAreaList(document.getElementById('areaSearch').value.trim());
   localStorage.setItem('gomi_v3',JSON.stringify({ward,rid,areaName:name}));
   renderToday();
   goToday();
   maybeNotify();
+  checkReminders();
 }
 
 /* ── 今日の表示 ── */
 function renderToday(){
-  const body=document.getElementById('todayBody');
-  clr(body);
+  const body=document.getElementById('todayBody'); clr(body);
 
   if(!regionId){
     document.getElementById('hdrArea').textContent='新潟市 ごみカレンダー';
@@ -348,7 +494,6 @@ function renderToday(){
     const empty=mk('div','empty');
     const h2=mk('h2'); h2.textContent='地区を設定してください';
     const p=mk('p'); p.textContent='設定タブから区と地区を選ぶと\nごみ収集カレンダーが表示されます';
-    p.style.whiteSpace='pre-line';
     const btn=mk('button','emptyBtn'); btn.textContent='地区を設定する';
     btn.addEventListener('click',goSettings);
     empty.appendChild(h2); empty.appendChild(p); empty.appendChild(btn);
@@ -359,19 +504,18 @@ function renderToday(){
   document.getElementById('hdrArea').textContent=areaName;
   document.getElementById('hdrWard').textContent=ward;
 
-  /* hero section */
+  /* hero */
   const hero=mk('div','hero');
-  const heroDate=mk('div','heroDate');
-  const d=new Date(today+'T00:00:00');
-  heroDate.textContent=(d.getMonth()+1)+'月'+d.getDate()+'日（'+DAYS[d.getDay()]+'）';
-  const heroArea=mk('div','heroArea'); heroArea.textContent=ward+' '+areaName;
-  hero.appendChild(heroDate); hero.appendChild(heroArea);
+  const dObj=new Date(today+'T00:00:00');
+  const hd=mk('div','heroDate');
+  hd.textContent=(dObj.getMonth()+1)+'月'+dObj.getDate()+'日（'+DAYS[dObj.getDay()]+'）';
+  const ha=mk('div','heroArea'); ha.textContent=ward+' '+areaName;
+  hero.appendChild(hd); hero.appendChild(ha);
 
   const types=sch(regionId,today);
   const chipsEl=mk('div','chips');
   if(!types.length){
-    const nc=mk('p','noCol'); nc.textContent='🙅 本日の収集なし';
-    chipsEl.appendChild(nc);
+    const nc=mk('p','noCol'); nc.textContent='🙅 本日の収集なし'; chipsEl.appendChild(nc);
   } else {
     types.forEach(t=>{
       const chip=mk('span','chip');
@@ -384,14 +528,13 @@ function renderToday(){
   body.appendChild(hero);
 
   /* next collections */
-  const labelEl=mk('p','secLabel'); labelEl.textContent='次回の収集';
-  body.appendChild(labelEl);
-  const nextBody=mk('div','secBody');
+  const lbl=mk('p','secLabel'); lbl.textContent='次回の収集'; body.appendChild(lbl);
+  const nb=mk('div','secBody');
   const upcoming=getUpcoming(regionId,today,5);
   if(!upcoming.length){
     const r=mk('div','row');
     const s=mk('span','rowSub'); s.textContent='この地区の今後の収集予定なし';
-    r.appendChild(s); nextBody.appendChild(r);
+    r.appendChild(s); nb.appendChild(r);
   } else {
     upcoming.forEach(u=>{
       const ud=new Date(u.date+'T00:00:00');
@@ -401,21 +544,19 @@ function renderToday(){
       dateEl.textContent=(ud.getMonth()+1)+'月'+ud.getDate()+'日（'+DAYS[dow]+'）';
       if(dow===0) dateEl.style.color='#FF3B30';
       else if(dow===6) dateEl.style.color='#007AFF';
-      const typesEl=mk('div','nextTypes');
-      typesEl.textContent=u.types.map(t=>(ICONS[t]||'')+' '+t).join('　');
-      row.appendChild(dateEl); row.appendChild(typesEl);
-      nextBody.appendChild(row);
+      const typEl=mk('div','nextTypes');
+      typEl.textContent=u.types.map(t=>(ICONS[t]||'')+' '+t).join('　');
+      row.appendChild(dateEl); row.appendChild(typEl);
+      nb.appendChild(row);
     });
   }
-  body.appendChild(nextBody);
+  body.appendChild(nb);
 }
 
 function getUpcoming(rid,fromDate,count){
   const s=GOMI_DATA.schedules[String(rid)]||{};
-  const result=[];
-  const d=new Date(fromDate+'T00:00:00');
-  d.setDate(d.getDate()+1);
-  let limit=90;
+  const result=[]; const d=new Date(fromDate+'T00:00:00');
+  d.setDate(d.getDate()+1); let limit=90;
   while(result.length<count&&limit-->0){
     const key=ds(d);
     if(s[key]&&s[key].length) result.push({date:key,types:s[key]});
@@ -435,20 +576,15 @@ document.getElementById('nextBtn').addEventListener('click',()=>{
 function renderCal(year,month){
   document.getElementById('calTitle').textContent=year+'年'+month+'月';
   const dows=document.getElementById('calDows'); clr(dows);
-  DAYS.forEach(d=>{
-    const el=mk('div','calDow'); el.textContent=d; dows.appendChild(el);
-  });
+  DAYS.forEach(d=>{const el=mk('div','calDow');el.textContent=d;dows.appendChild(el);});
 
   const cells=document.getElementById('calCells'); clr(cells);
   const s=regionId?(GOMI_DATA.schedules[String(regionId)]||{}):{};
   const used=new Set();
-
   const firstDow=new Date(year,month-1,1).getDay();
   const lastD=new Date(year,month,0).getDate();
 
-  for(let i=0;i<firstDow;i++){
-    cells.appendChild(mk('div','calCell other'));
-  }
+  for(let i=0;i<firstDow;i++) cells.appendChild(mk('div','calCell other'));
   for(let d=1;d<=lastD;d++){
     const dow=new Date(year,month-1,d).getDay();
     const el=mk('div','calCell'+(dow===0?' calSun':dow===6?' calSat':''));
@@ -478,7 +614,170 @@ function renderCal(year,month){
   });
 }
 
-/* ── 通知 ── */
+/* ── 分別ガイド ── */
+function buildGuide(){
+  const container=document.getElementById('guideList');
+  GUIDE_ORDER.forEach(type=>{
+    const info=GOMI_INFO[type];
+    const color=COLORS[type]||'#888';
+    const isMonthly=info.freq.startsWith('月1');
+
+    const row=mk('div','typeRow');
+
+    /* header */
+    const hd=mk('div','typeRowHd');
+    const bar=mk('div','typeColorBar'); bar.style.background=color;
+    const iconEl=mk('span','typeIcon'); iconEl.textContent=ICONS[type]||'';
+    const nameEl=mk('span','typeName'); nameEl.textContent=type;
+    const freq=mk('span','freqBadge'+(isMonthly?' freqMonthly':'')); freq.textContent=info.freq;
+    const chev=mk('span','chevron'); chev.textContent='›';
+    hd.appendChild(bar); hd.appendChild(iconEl);
+    hd.appendChild(nameEl); hd.appendChild(freq); hd.appendChild(chev);
+
+    /* body */
+    const body=mk('div','typeBody');
+
+    const bagEl=mk('div','guideBag');
+    bagEl.textContent='袋: '+info.bag;
+    body.appendChild(bagEl);
+
+    const okSec=mk('div','guideSection');
+    const okHd=mk('div','guideSectionHd'); okHd.textContent='出せるもの';
+    const okList=mk('ul','guideItems');
+    info.ok.forEach(item=>{
+      const li=mk('li','guideItem ok'); li.textContent=item; okList.appendChild(li);
+    });
+    okSec.appendChild(okHd); okSec.appendChild(okList);
+    body.appendChild(okSec);
+
+    const ngSec=mk('div','guideSection');
+    const ngHd=mk('div','guideSectionHd'); ngHd.textContent='出せないもの';
+    const ngList=mk('ul','guideItems');
+    info.ng.forEach(item=>{
+      const li=mk('li','guideItem ng'); li.textContent=item; ngList.appendChild(li);
+    });
+    ngSec.appendChild(ngHd); ngSec.appendChild(ngList);
+    body.appendChild(ngSec);
+
+    if(info.note){
+      const note=mk('div','guideNote');
+      note.textContent='⚠️ '+info.note; body.appendChild(note);
+    }
+
+    hd.addEventListener('click',()=>row.classList.toggle('open'));
+    row.appendChild(hd); row.appendChild(body);
+    container.appendChild(row);
+  });
+}
+
+/* ── リマインド設定 ── */
+const REMIND_TYPES=['燃やさないごみ','特定5品目'];
+
+function initRemindSettings(){
+  const sec=document.getElementById('remindSection');
+  clr(sec);
+
+  /* 各月1回ごみのトグル */
+  const savedTypes=JSON.parse(localStorage.getItem('gomi_remind_types')||'[]');
+  REMIND_TYPES.forEach(type=>{
+    const row=mk('div','row');
+    const info=mk('div'); info.style.flex='1';
+    const lbl=mk('div'); lbl.style.cssText='font-size:15px'; lbl.textContent=(ICONS[type]||'')+' '+type;
+    const sub=mk('div'); sub.style.cssText='font-size:12px;color:var(--lbl3);margin-top:2px';
+    sub.textContent='月1回 · 収集日の前に通知';
+    info.appendChild(lbl); info.appendChild(sub);
+    const tog=mk('label','toggle');
+    const inp=mk('input'); inp.type='checkbox'; inp.className='remindToggle';
+    inp.dataset.type=type; inp.checked=savedTypes.includes(type);
+    inp.addEventListener('change',saveRemindTypes);
+    const slider=mk('span','tSlider');
+    tog.appendChild(inp); tog.appendChild(slider);
+    row.appendChild(info); row.appendChild(tog);
+    sec.appendChild(row);
+  });
+
+  /* 何日前か selector */
+  const daysRow=mk('div','row');
+  daysRow.style.flexWrap='wrap'; daysRow.style.gap='8px';
+  const daysLbl=mk('span','rowLbl');
+  daysLbl.style.fontSize='15px'; daysLbl.textContent='通知タイミング';
+  const ctrl=mk('div','segCtrl');
+  const savedDays=localStorage.getItem('gomi_remind_days')||'3';
+  [['前日','1'],['3日前','3'],['1週間前','7']].forEach(([label,val])=>{
+    const btn=mk('button','segBtn'+(savedDays===val?' active':''));
+    btn.textContent=label; btn.dataset.days=val;
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.segBtn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      localStorage.setItem('gomi_remind_days',val);
+      localStorage.removeItem('gomi_remind_date'); // 再チェックを促す
+    });
+    ctrl.appendChild(btn);
+  });
+  daysRow.appendChild(daysLbl); daysRow.appendChild(ctrl);
+  sec.appendChild(daysRow);
+
+  /* 通知許可の説明 */
+  const noteRow=mk('div','row');
+  const noteSpan=mk('span','rowSub');
+  noteSpan.textContent='「今日のごみ通知」をオンにすると、アプリを開いた時にリマインドが届きます';
+  noteRow.appendChild(noteSpan); sec.appendChild(noteRow);
+}
+
+function saveRemindTypes(){
+  const enabled=Array.from(document.querySelectorAll('.remindToggle'))
+    .filter(t=>t.checked).map(t=>t.dataset.type);
+  localStorage.setItem('gomi_remind_types',JSON.stringify(enabled));
+  localStorage.removeItem('gomi_remind_date'); // 再チェックを促す
+}
+
+/* ── リマインド通知チェック ── */
+async function checkReminders(){
+  if(!regionId) return;
+  if(!('Notification' in window)||Notification.permission!=='granted') return;
+  const remindTypes=JSON.parse(localStorage.getItem('gomi_remind_types')||'[]');
+  if(!remindTypes.length) return;
+  const lastDate=localStorage.getItem('gomi_remind_date');
+  if(lastDate===today) return;
+
+  const days=parseInt(localStorage.getItem('gomi_remind_days')||'3');
+  const schedule=GOMI_DATA.schedules[String(regionId)]||{};
+  const reminders=[];
+
+  remindTypes.forEach(type=>{
+    for(let i=1;i<=days;i++){
+      const d=new Date(today+'T00:00:00');
+      d.setDate(d.getDate()+i);
+      const key=ds(d);
+      if((schedule[key]||[]).includes(type)){
+        const ud=new Date(key+'T00:00:00');
+        const daysText=i===1?'明日':`${i}日後`;
+        const dateLabel=(ud.getMonth()+1)+'月'+ud.getDate()+'日（'+DAYS[ud.getDay()]+'）';
+        reminders.push({type,daysText,dateLabel,gtype:type});
+        break;
+      }
+    }
+  });
+
+  if(!reminders.length){ localStorage.setItem('gomi_remind_date',today); return; }
+
+  let reg=swReg;
+  if(!reg){try{reg=await navigator.serviceWorker.ready}catch(e){return}}
+  const sw=reg.active||reg.installing||reg.waiting;
+  if(!sw) return;
+
+  reminders.forEach(r=>{
+    sw.postMessage({
+      type:'NOTIFY_REMINDER',
+      title:`🗓️ ${r.daysText}は${r.type}の日`,
+      body:`${ward} ${areaName}\n${r.dateLabel}`,
+      gtype:r.gtype,
+    });
+  });
+  localStorage.setItem('gomi_remind_date',today);
+}
+
+/* ── 今日の通知 ── */
 const notifToggle=document.getElementById('notifToggle');
 notifToggle.checked=localStorage.getItem('gomi_notif')==='1';
 syncNotifNote();
@@ -487,17 +786,15 @@ notifToggle.addEventListener('change',async()=>{
   if(notifToggle.checked){
     if(!('Notification' in window)){
       notifToggle.checked=false;
-      alert('このブラウザは通知に対応していません');
-      return;
+      alert('このブラウザは通知に対応していません'); return;
     }
     const perm=await Notification.requestPermission();
     if(perm!=='granted'){
       notifToggle.checked=false;
-      alert('通知が許可されませんでした。\nSafari設定からこのサイトの通知を許可してください');
-      return;
+      alert('通知が許可されませんでした。\nSafari設定からこのサイトの通知を許可してください'); return;
     }
     localStorage.setItem('gomi_notif','1');
-    maybeNotify();
+    maybeNotify(); checkReminders();
   } else {
     localStorage.removeItem('gomi_notif');
   }
@@ -536,8 +833,13 @@ async function maybeNotify(){
   }catch(e){}
 })();
 
+/* ── 初期化 ── */
+buildGuide();
+initRemindSettings();
 renderToday();
 renderCal(calY,calM);
+maybeNotify();
+checkReminders();
 
 })();
 </script>
