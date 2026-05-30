@@ -534,6 +534,8 @@ function renderToday(){
   if(!regionId){
     document.getElementById('hdrArea').textContent='新潟市 ごみカレンダー';
     document.getElementById('hdrWard').textContent='';
+
+    // 空状態
     const empty=mk('div','empty');
     const h2=mk('h2'); h2.textContent='地区を設定してください';
     const p=mk('p'); p.textContent='設定タブから区と地区を選ぶと\nごみ収集カレンダーが表示されます';
@@ -541,6 +543,56 @@ function renderToday(){
     btn.addEventListener('click',goSettings);
     empty.appendChild(h2); empty.appendChild(p); empty.appendChild(btn);
     body.appendChild(empty);
+
+    // 使い方ガイド
+    const guideLbl=mk('p','secLabel'); guideLbl.textContent='アプリの使い方 / ホーム画面に追加';
+    body.appendChild(guideLbl);
+
+    const guideWrap=mk('div');
+    guideWrap.style.cssText='padding:0 16px 24px;display:flex;flex-direction:column;gap:10px';
+
+    // iOS
+    const iosCard=mk('div','instCard');
+    const iosH=mk('h3'); iosH.textContent='🍎 iPhone / iPad';
+    const iosBadge=mk('span','instBadge instBadgeReq'); iosBadge.textContent='通知にはホーム画面への追加が必要';
+    const iosList=mk('ol');
+    ['SafariでこのページをURLから開く',
+     '下部の共有ボタン □↑ をタップ',
+     '「ホーム画面に追加」を選ぶ',
+     '追加したアイコンからアプリを起動',
+     '設定タブ →「今日のごみ通知」をオン'].forEach(t=>{
+      const li=mk('li'); li.textContent=t; iosList.appendChild(li);
+    });
+    const iosNote=mk('p','instNote');
+    iosNote.textContent='※ iOS 16.4以上が必要です\n※ SafariのみOK（Chrome・Firefoxは通知非対応）';
+    iosCard.appendChild(iosH); iosCard.appendChild(iosBadge);
+    iosCard.appendChild(iosList); iosCard.appendChild(iosNote);
+
+    // Android
+    const andCard=mk('div','instCard');
+    const andH=mk('h3'); andH.textContent='🤖 Android';
+    const andBadge=mk('span','instBadge instBadgeOk'); andBadge.textContent='ホーム画面追加なしで通知が使えます';
+    const andDesc=mk('p','step');
+    const andStrong=mk('strong'); andStrong.textContent='Chrome';
+    andDesc.appendChild(andStrong);
+    andDesc.appendChild(document.createTextNode(' でページを開き、設定タブから「今日のごみ通知」をオンにするだけです。'));
+    const andSubHd=mk('p');
+    andSubHd.style.cssText='font-size:13px;font-weight:600;color:var(--lbl);margin-bottom:4px';
+    andSubHd.textContent='ホーム画面に追加する場合（任意）';
+    const andList=mk('ol');
+    ['Chrome 右上の ⋮ をタップ',
+     '「アプリをインストール」または「ホーム画面に追加」を選ぶ'].forEach(t=>{
+      const li=mk('li'); li.textContent=t; andList.appendChild(li);
+    });
+    const andNote=mk('p','instNote');
+    andNote.textContent='※ Samsung Internet など他ブラウザも通知に対応しています';
+    andCard.appendChild(andH); andCard.appendChild(andBadge);
+    andCard.appendChild(andDesc); andCard.appendChild(andSubHd);
+    andCard.appendChild(andList); andCard.appendChild(andNote);
+
+    guideWrap.appendChild(iosCard);
+    guideWrap.appendChild(andCard);
+    body.appendChild(guideWrap);
     return;
   }
 
