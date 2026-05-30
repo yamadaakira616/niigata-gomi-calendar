@@ -181,11 +181,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans',sans-serif;
   font-weight:600}
 
 /* install card */
-.instCard{margin:0 16px 16px;padding:16px;background:var(--bg2);
+.instCard{padding:16px;background:var(--bg2);
   border-radius:12px;border:.5px solid var(--sep)}
-.instCard h3{font-size:15px;font-weight:600;margin-bottom:8px}
-.instCard ol{padding-left:20px;font-size:14px;line-height:1.9;color:var(--lbl2)}
-.instNote{font-size:12px;color:var(--lbl3);margin-top:8px;line-height:1.5}
+.instCard h3{font-size:15px;font-weight:600;margin-bottom:10px}
+.instCard ol{padding-left:20px;font-size:14px;line-height:2;color:var(--lbl2)}
+.instCard p.step{font-size:14px;color:var(--lbl2);line-height:1.7;margin-bottom:10px}
+.instNote{font-size:12px;color:var(--lbl3);margin-top:10px;line-height:1.6}
+.instBadge{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;
+  border-radius:8px;margin-bottom:10px}
+.instBadgeReq{background:rgba(255,59,48,.1);color:var(--red)}
+.instBadgeOk{background:rgba(52,199,89,.1);color:var(--grn)}
 
 /* ── Tab Bar ── */
 .tabBar{
@@ -276,18 +281,34 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans',sans-serif;
       </div>
     </div>
 
-    <p class="secLabel">ホーム画面に追加</p>
-    <div style="padding:0 16px 16px">
+    <p class="secLabel">アプリの使い方 / ホーム画面に追加</p>
+    <div style="padding:0 16px 16px;display:flex;flex-direction:column;gap:10px">
+
       <div class="instCard">
-        <h3>📱 アプリとして使う</h3>
+        <h3>🍎 iPhone / iPad</h3>
+        <span class="instBadge instBadgeReq">通知にはホーム画面への追加が必要</span>
         <ol>
-          <li>Safariでこのページを開く</li>
+          <li><strong>Safari</strong> でこのページを開く</li>
           <li>下部の共有ボタン <strong>□↑</strong> をタップ</li>
-          <li>「ホーム画面に追加」を選択</li>
-          <li>追加後はアプリアイコンから起動</li>
+          <li>「ホーム画面に追加」を選ぶ</li>
+          <li>追加したアイコンからアプリを起動</li>
+          <li>設定タブ →「今日のごみ通知」をオン</li>
         </ol>
-        <p class="instNote">※ iOS 16.4以上 + ホーム画面追加後に通知が使えます<br>※ Chrome・Firefoxでは通知非対応</p>
+        <p class="instNote">※ iOS 16.4以上が必要です<br>※ SafariのみOK（Chrome・Firefoxは通知非対応）</p>
       </div>
+
+      <div class="instCard">
+        <h3>🤖 Android</h3>
+        <span class="instBadge instBadgeOk">ホーム画面追加なしで通知が使えます</span>
+        <p class="step"><strong>Chrome</strong> でページを開き、設定タブから「今日のごみ通知」をオンにするだけです。</p>
+        <p style="font-size:13px;font-weight:600;color:var(--lbl);margin-bottom:4px">ホーム画面に追加する場合（任意）</p>
+        <ol>
+          <li>Chrome 右上の <strong>⋮</strong> をタップ</li>
+          <li>「アプリをインストール」または「ホーム画面に追加」を選ぶ</li>
+        </ol>
+        <p class="instNote">※ Samsung Internet など他ブラウザも通知に対応しています</p>
+      </div>
+
     </div>
   </div>
 
@@ -897,9 +918,12 @@ function syncNotifNote(){
     const span=note.querySelector('.rowSub');
     if(span){
       const hasPush='PushManager' in window&&localStorage.getItem('gomi_push_active')==='1';
+      const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;
       span.textContent=hasPush
         ?'毎朝6時に今日の収集情報をお知らせします。月1回ごみはリマインド通知もお届けします'
-        :'ホーム画面に追加してアプリを開くと今日の収集情報が通知されます';
+        :isIOS
+          ?'ホーム画面に追加してアプリを起動すると今日の収集情報が通知されます'
+          :'Chromeをバックグラウンドで起動しておくと今日の収集情報が通知されます';
     }
   }
 }
