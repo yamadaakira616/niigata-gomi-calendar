@@ -67,12 +67,40 @@ self.addEventListener('notificationclick', e => {
   e.waitUntil(clients.openWindow(BASE + '/'));
 });
 
-// サーバーからのプッシュ（将来対応）
+// サーバーからのWeb Push（毎朝6時）
 self.addEventListener('push', e => {
-  const data = e.data?.json() || {};
-  e.waitUntil(self.registration.showNotification(data.title || 'ごみの日', {
-    body: data.body || '',
-    icon: BASE + '/icon-192.png',
-    tag: 'gomi-push',
-  }));
+  if (!e.data) return;
+  const { todayTypes = [], areaName = '', reminders = [] } = e.data.json();
+
+  e.waitUntil((async () => {
+    // 今日の収集通知
+    if (todayTypes.length) {
+      const body = todayTypes.map(t => (ICONS[t] || '') + ' ' + t).join('　');
+      await self.registration.showNotification('今日のごみ収集', {
+        body: areaName + '\n' + body,
+        icon: BASE + '/icon-192.png',
+        badge: BASE + '/icon-192.png',
+        tag: 'gomi-today',
+        renotify: true,
+        vibrate: [100],
+      });
+    }
+
+    // リマインド通知（月1回ごみの事前通知）
+    for (const rem of reminders) {
+      const label = rem.daysUntil === 1 ? '明日' : `${rem.daysUntil}日後`;
+      const d = new Date(rem.date + 'T00:00:00+09:00');
+      const dateLabel = `${d.getMonth() + 1}月${d.getDate()}日`;
+      await self.registration.showNotification(
+        `${ICONS[rem.type] || ''}${rem.type}は${label}（${dateLabel}）`, {
+          body: areaName,
+          icon: BASE + '/icon-192.png',
+          badge: BASE + '/icon-192.png',
+          tag: 'gomi-remind-' + rem.type.replace(/\W/g, ''),
+          renotify: true,
+          vibrate: [100, 50, 100],
+        }
+      );
+    }
+  })());
 });

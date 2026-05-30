@@ -400,6 +400,11 @@ const ICONS={
 };
 const DAYS=['日','月','火','水','木','金','土'];
 
+/* ── Web Push 設定 ── */
+// Cloudflare Workers にデプロイ後に実際のURLへ変更する
+const PUSH_SERVER='https://niigata-gomi-push.SUBDOMAIN.workers.dev';
+const VAPID_PUBLIC_KEY='BEcpzOjyIRCBAouvlRRsfeeHPW8oEFggqJpySEOwnLyz3GVcyVEf3-z2DlPun8dBH5ZwwliUMmzH3IgDeQP7fU4';
+
 /* ── 状態 ── */
 let ward='', regionId=null, areaName='';
 let calY=new Date().getFullYear(), calM=new Date().getMonth()+1;
@@ -411,6 +416,19 @@ function mk(tag,cls){const el=document.createElement(tag);if(cls)el.className=cl
 function ds(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 const today=ds(new Date());
 function sch(rid,date){return(GOMI_DATA.schedules[String(rid)]||{})[date]||[]}
+
+function urlB64ToU8(b64str){
+  const pad='='.repeat((4-b64str.length%4)%4);
+  const b64=(b64str+pad).replace(/-/g,'+').replace(/_/g,'/');
+  const raw=atob(b64);
+  return Uint8Array.from(raw,c=>c.charCodeAt(0));
+}
+
+function getPushId(){
+  let id=localStorage.getItem('gomi_push_id');
+  if(!id){id=crypto.randomUUID();localStorage.setItem('gomi_push_id',id);}
+  return id;
+}
 
 /* ── Service Worker ── */
 if('serviceWorker' in navigator){
@@ -480,8 +498,11 @@ function selectArea(rid,name){
   localStorage.setItem('gomi_v3',JSON.stringify({ward,rid,areaName:name}));
   renderToday();
   goToday();
-  maybeNotify();
-  checkReminders();
+  updatePushSubscription();
+  if(localStorage.getItem('gomi_push_active')!=='1'){
+    maybeNotify();
+    checkReminders();
+  }
 }
 
 /* ── 今日の表示 ── */
@@ -710,7 +731,8 @@ function initRemindSettings(){
       document.querySelectorAll('.segBtn').forEach(b=>b.classList.remove('active'));
       btn.classList.add('active');
       localStorage.setItem('gomi_remind_days',val);
-      localStorage.removeItem('gomi_remind_date'); // 再チェックを促す
+      localStorage.removeItem('gomi_remind_date');
+      updatePushSubscription();
     });
     ctrl.appendChild(btn);
   });
@@ -720,7 +742,10 @@ function initRemindSettings(){
   /* 通知許可の説明 */
   const noteRow=mk('div','row');
   const noteSpan=mk('span','rowSub');
-  noteSpan.textContent='「今日のごみ通知」をオンにすると、アプリを開いた時にリマインドが届きます';
+  const hasPush='PushManager' in window&&localStorage.getItem('gomi_push_active')==='1';
+  noteSpan.textContent=hasPush
+    ?'設定した日数前の朝6時、さらに前日の朝6時にも通知が届きます'
+    :'「今日のごみ通知」をオンにすると、アプリを開いた時にリマインドが届きます';
   noteRow.appendChild(noteSpan); sec.appendChild(noteRow);
 }
 
@@ -728,7 +753,66 @@ function saveRemindTypes(){
   const enabled=Array.from(document.querySelectorAll('.remindToggle'))
     .filter(t=>t.checked).map(t=>t.dataset.type);
   localStorage.setItem('gomi_remind_types',JSON.stringify(enabled));
-  localStorage.removeItem('gomi_remind_date'); // 再チェックを促す
+  localStorage.removeItem('gomi_remind_date');
+  updatePushSubscription();
+}
+
+/* ── Web Push 購読管理 ──────────────────────────────── */
+async function subscribePush(){
+  if(!('PushManager' in window)) return false;
+  try{
+    const sw=await navigator.serviceWorker.ready;
+    const sub=await sw.pushManager.subscribe({
+      userVisibleOnly:true,
+      applicationServerKey:urlB64ToU8(VAPID_PUBLIC_KEY),
+    });
+    await postSubscriptionToServer(sub);
+    localStorage.setItem('gomi_push_active','1');
+    return true;
+  }catch(e){
+    console.warn('Push subscribe failed:',e);
+    return false;
+  }
+}
+
+async function unsubscribePush(){
+  try{
+    const sw=await navigator.serviceWorker.ready;
+    const sub=await sw.pushManager.getSubscription();
+    if(sub) await sub.unsubscribe();
+    await fetch(PUSH_SERVER+'/unsubscribe',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({id:getPushId()}),
+    });
+  }catch(e){console.warn('Push unsubscribe failed:',e);}
+  localStorage.removeItem('gomi_push_active');
+}
+
+async function postSubscriptionToServer(sub){
+  if(!regionId||!sub) return;
+  const remindTypes=JSON.parse(localStorage.getItem('gomi_remind_types')||'[]');
+  const remindDays=parseInt(localStorage.getItem('gomi_remind_days')||'3');
+  const schedule=GOMI_DATA.schedules[String(regionId)]||{};
+  await fetch(PUSH_SERVER+'/subscribe',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      id:getPushId(),
+      subscription:sub.toJSON(),
+      regionId,areaName:ward+' '+areaName,
+      remindTypes,remindDays,schedule,
+    }),
+  });
+}
+
+async function updatePushSubscription(){
+  if(localStorage.getItem('gomi_push_active')!=='1') return;
+  try{
+    const sw=await navigator.serviceWorker.ready;
+    const sub=await sw.pushManager.getSubscription();
+    if(sub) await postSubscriptionToServer(sub);
+  }catch(e){console.warn('Push update failed:',e);}
 }
 
 /* ── リマインド通知チェック ── */
@@ -794,15 +878,30 @@ notifToggle.addEventListener('change',async()=>{
       alert('通知が許可されませんでした。\nSafari設定からこのサイトの通知を許可してください'); return;
     }
     localStorage.setItem('gomi_notif','1');
-    maybeNotify(); checkReminders();
+    const pushOk=await subscribePush();
+    if(!pushOk){
+      // Web Push非対応の場合はアプリ起動時通知にフォールバック
+      maybeNotify(); checkReminders();
+    }
   } else {
     localStorage.removeItem('gomi_notif');
+    await unsubscribePush();
   }
   syncNotifNote();
 });
 
 function syncNotifNote(){
-  document.getElementById('notifNote').style.display=notifToggle.checked?'flex':'none';
+  const note=document.getElementById('notifNote');
+  note.style.display=notifToggle.checked?'flex':'none';
+  if(notifToggle.checked){
+    const span=note.querySelector('.rowSub');
+    if(span){
+      const hasPush='PushManager' in window&&localStorage.getItem('gomi_push_active')==='1';
+      span.textContent=hasPush
+        ?'毎朝6時に今日の収集情報をお知らせします。月1回ごみはリマインド通知もお届けします'
+        :'ホーム画面に追加してアプリを開くと今日の収集情報が通知されます';
+    }
+  }
 }
 
 async function maybeNotify(){
@@ -838,8 +937,13 @@ buildGuide();
 initRemindSettings();
 renderToday();
 renderCal(calY,calM);
-maybeNotify();
-checkReminders();
+// Web Push が有効な場合はサーバー側で通知するためスキップ
+if(localStorage.getItem('gomi_push_active')!=='1'){
+  maybeNotify();
+  checkReminders();
+}
+// 購読情報を最新の設定で更新（エンドポイント変更への対応）
+updatePushSubscription();
 
 })();
 </script>
